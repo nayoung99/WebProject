@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+<style>
+body{ 
+		background-color: #CED8F6;
+		font-family: 'Black Han Sans';
+	}
+	
+	
+		
+	div.addform{
+		position: relative;
+		left: 400px;
+		top:100px;
+		width: 400px;
+		height: 400px;
+		padding: 20px 20px;
+		
+	}
+	
+	div.updateform{
+		position: relative;
+		left: 400px;
+		top:100px;
+		width: 400px;
+		height: 400px;
+		padding: 20px 20px;
+	}
+	
+	div.list{
+		position: relative;
+		left: 200px;
+		top:100px;
+	
+	}
+	
+	div.moviecontent{
+		position: relative;
+		left: 400px;
+		top:100px;
+		width: 400px;
+		height: 400px;
+		padding: 20px 20px;
+	}
+	
+	table.movie span.pencilbtn{
+		position: relative;
+		left: 200px;
+		top:50px;
+	}
+	
+	table.movie>thead>tr>td{
+		background-color: white;  
+		font-weight: bold;  
+		text-align: center;
+		
+	}
+	
+	td.subject{
+		cursor:pointer;
+	}
+	
+	td.subject:hover{
+		background-color: #ECE0F8;
+		color: blue;
+	}
+	
+	table.content span.title{
+		font-family: 'Nanum Gothic Coding';
+		font-size: 20pt;
+		font-weight: bold;  
+	}
+	
+	table.content span.day{
+		font-size: 10pt;
+		color: gray;
+		float: right;
+		line-height: 60px;
+	}
+	
+	table.content span.writer{
+		font-family: 'Gothic A1';
+		font-size: 15pt;
+		font-weight: bold;  
+	}
+	
+	table.content span.rate{
+		font-family: 'Gothic A1';
+		font-size: 15pt;
+		font-weight: bold;  
+	}
+	
+	table.content div.content{
+		font-weight: bold;
+		font-family: 'Gothic A1';
+	}
+	
+	
+	
+
+	table.content span.likes span.su{
+		
+		font-size: 15pt;
+		margin-left: 5pt;
+	}
+	
+	table.content span.likes span.glyphicon{
+		
+		font-size: 20pt;
+		cursor:pointer;
+	}
+	
+	table.content span.likes span.glyphicon:active{
+		
+		color:blue;
+	}
+	
+	span.left{
+		font-size: 25pt;
+		font-weight: bold;
+		cursor: pointer;
+		margin-left: 30px;
+	}
+	
+	span.right{
+		font-size: 25pt;
+		font-weight: bold;
+		cursor: pointer;
+		float:right;
+		margin-right: 30px;
+	}
+	
+	#linkbtn{
+		position: relative;
+		left: 200px;
+		top:100px;
+		border-radius: 30px;  
+	
+	}
+	
+	
+</style>
+<div>
+<h2 style='margin-left: 70pt; font-size:3em;font-family:Do Hyeon;font-weight: bold;'>Movie Review</h2>
+<button type="button" id="linkbtn" style="background-color:#E6E0F8;width:150px;margin-top: 30px;
+"onclick="location.href='moviemain.html'">메인페이지gogo~~</button>  
+</div>
+<script type="text/javascript">
+var start=1; //페이징 시작번호
+var total=0;//db데이터전체갯수
+$(function() {
+	$("div.addform").hide();
+	$("div.updateform").hide();
+	$("div.moviecontent").hide();
+	$("div.delete").hide();
+	
+	list();//처음 시작시 목록 출력
+
+	
+	//글쓰기 버튼 누르면 입력폼 나오게하기
+	$(document).on("click","button.addbtn",function(){
+		$("div.list").hide();
+		$("div.moviecontent").hide();
+		$("div.addform").show();
+		
+	});
+	
+	//이미지 선택시
+	 $("#selimage").change(function(){
+		var im=$(this).val();
+		//이미지명을 현재값에 추가로 더하기
+		var data=$("#image").val();
+		$("#image").val(data+im+",");
+		
+		//아래 이미지뷰에 추가로 이미지 보이게 하기
+		$("#imgview").html(function(i,html){
+			var s="<img src='"+im+"' width='100'>";
+			return html+s;
+			
+		});
+	}); 
+	//수정시
+	//이미지 선택시
+	 $("#uselimage").change(function(){
+		var im=$(this).val();
+		//이미지명을 현재값에 추가로 더하기
+		var data=$("#uimage").val();
+		$("#uimage").val(data+im+",");
+		
+		//아래 이미지뷰에 추가로 이미지 보이게 하기
+		$("#uimgview").html(function(i,html){
+			var s="<img src='"+im+"' width='100'>";
+			return html+s;
+			
+		});
+	}); 
+	
+	
+	
+	//db추가 버튼
+	 $("#btninsert").click(function(e) {
+		e.preventDefault();//기본 이벤트 무효화
+		//입력한 데이터 읽기
+		var writer=$("#writer").val();
+		var pass=$("#pass").val();
+		var subject=$("#subject").val();
+		var content=$("#content").val();
+		var rate=$(":radio[name=\"rate\"]:checked").val();
+		
+		//alert(rate);
+		var image=$("#image").val();
+		//마지막 컴마 제거
+		image=image.substring(0,image.length-1);
+		$.ajax({
+			type:"post",
+			dataType:"html",
+			url:"movieinsert.jsp",
+			data:{"writer":writer,"pass":pass,"subject":subject,
+				"content":content,"rate":rate,"image":image},
+			success:function(d){
+				//다시 출력
+				list();
+				//입력값 지우기
+				$("#writer").val('');
+				$("#pass").val('');
+				$("#subject").val('');
+				$("#content").val('');
+				$("#rate").val('');
+				$("#image").val('');
+				$("#imgview").empty();//이미지 전체 삭제
+				
+				//입력폼 숨기기
+				$("div.addform").hide();
+				//목록 출력
+				$("div.list").show();
+			}
+		});
+		
+	}); 
+	
+	//제목 클릭시 이벤트
+		$(document).on("click","td.subject",function(){
+			var num=$(this).attr("num");
+			//alert(num);
+			$.ajax({
+				type:"get",
+				dataType:"json",
+				url:"moviecontent.jsp",
+				data:{"num":num},
+				success:function(data){
+					//좋아요 이미지 태그에 num값 넣기
+					$("table.content span.likes span:eq(0)").attr("num",num);
+					
+					$("table.content span.title").html(data.subject==null?"제목없음":data.subject);
+					$("table.content span.day").html(data.writeday);
+					$("table.content span.writer").html(data.writer);
+					$("table.content span.su").html(data.likes);
+					$("table.content span.rate").html(data.rate);
+					$("table.content div.content").html("<pre>"+
+							data.content+"</pre>");
+					
+					//이미지(널값이 아닐경우에만 출력)
+					if(data.image!=null){
+					var imgarr=data.image.split(",");
+					var im="";
+					$.each(imgarr, function(i, elt){
+						im+="<img src='"+elt+"' class='showimg'>";
+					});
+					$("table.content div.image").html(im);
+					}
+					//목록 안보이게
+					$("div.list").hide();
+					$("div.moviecontent").show();
+					
+				}
+			});
+		});
+		
+		//좋아요 이벤트
+		$("span.likes span.glyphicon-heart").click(function(){		
+			var num=$(this).attr("num");
+			console.log(num);
+			$.ajax({
+				type:"get",
+				dataType:"xml",
+				url:"movielikes.jsp",
+				data:{"num":num},
+				success:function(data){
+					$("span.likes span.su").text($(data).text());
+				}
+			});
+		});
+
+		//다음 이벤트
+		$(document).on("click","span.right",function(){
+			start+=10;
+			if(start>total){
+				alert("마지막페이지입니다");
+				start-=10;
+				
+			}else{
+				list();
+			}
+		});
+		
+		//이전 이벤트
+		$(document).on("click","span.left",function(){
+			start-=10;
+			if(start<0){
+				alert("첫 페이지입니다");
+				start+=10;
+			}else{
+				list();
+			}
+		});
+
+	});
+
+
+		
+function list()
+{	
+	$.ajax({
+		type:"get",
+		dataType:"xml",
+		url:"movielist.jsp",
+		data:{"start":start},
+		success:function(data){
+			total=$(data).find("total").text();
+			console.log("total="+total);
+			var s="";
+			s+="<table class='movie table table-bordered' style='width:900px;'>";
+			s+="<caption><button type='button' id='pencilbtn' class='btn addbtn' style='width: 100px;background-color:#CED8F6;border-radius:50px;border: 2px solid gray;'>";
+			s+="<span class='glyphicon glyphicon-pencil'></span>리뷰작성</button></caption>";
+			s+="<thead><tr>";
+			s+="<td style='width:30px;'>번호</td>";
+			s+="<td style='width:150px;'>제목</td>";
+			s+="<td style='width:60px;'>닉네임</td>";
+			s+="<td style='width:80px;'>작성일</td>";
+			s+="<td style='width:30px;'>좋아요</td>";	
+			s+="<td style='width:30px;'>별점</td>";
+			s+="</tr></thead>";
+			s+="<tbody>"; 
+			//db에서 데이타 가져와서 출력하기
+			var n=$(data).find("movie").length;
+			//alert(n);
+			if(n==0){
+				s+="<tr height='50'>";
+				s+="<td colspan='6' align='center'>";
+				s+="<b>저장된 글이 없습니다</b></td></tr>";
+			}else{
+				var no=total-start+1;//각페이지에서 출력할 시작번호
+				$(data).find("movie").each(function(i,element) {
+					var n=$(this);
+					var num=n.attr("num");
+					var likes=n.attr("likes");
+					var writer=n.find("writer").text();
+					var subject=n.find("subject").text();
+					var content=n.find("content").text();
+					var image=n.find("image").text();
+					var rate=n.find("rate").text();
+					var longday=n.find("longday").text();
+					var shortday=n.find("shortday").text();
+					
+					//출력
+					s+="<tr align='center' style='background-color:white;'>";  
+					//페이지에 해당하는 번호
+					s+="<td>"+(no--)+"</td>";                             //s+="<td>"+(i+1)+"</td>";
+					s+="<td align='left' num="+num+" class='subject'>"
+						+subject+"</td>";
+					s+="<td>"+writer+"</td>";
+					s+="<td>"+shortday+"</td>";
+					s+="<td>"+likes+"</td>";
+					s+="<td>"+rate+"</td>";
+					s+="</tr>";
+					
+				});
+				
+				
+				//이전,다음
+				s+="<tr><td colspan='6'>";
+				s+="<span class='left glyphicon glyphicon-menu-left'></span>";
+				s+="<span class='right glyphicon glyphicon-menu-right'></span>";
+				s+="</td></tr>";
+				
+			}
+
+			s+="</tbody>";	
+			s+="</table>";
+			$("div.list").html(s);
+		}
+	});	
+}
+
+
+
+</script>
+</head>
+<body>
+<div class="addform">
+	<form id="addfrm">
+		<table class="table table-bordered" style="width:500px; border: 3px solid #A9BCF5;">
+		<caption><b>리뷰 작성</b></caption>
+		<tr>
+			<th style="width:100px; background-color: #EFF2FB">제목</th>
+				<td>
+						<input type="text" class="form-control"
+							name="subject" id="subject"
+							style="width: 300px;" placeholder="제목을 입력해주세요">
+					</td>				
+		</tr>	
+		<tr>
+			<th style="width:100px; background-color: #EFF2FB">별점</th>
+				<td>
+					<input type="radio" name="rate" id="rate" value="별1개">별1개
+					<input type="radio" name="rate" id="rate" value="별2개">별2개
+					<input type="radio" name="rate" id="rate" value="별3개">별3개
+					<input type="radio" name="rate" id="rate" value="별4개">별4개
+					<input type="radio" name="rate" id="rate" value="별5개">별5개
+					
+				</td>
+			
+		
+		</tr>
+		
+		<tr>
+			<th style="width:100px; background-color: #EFF2FB">닉네임</th>
+				<td>
+						<input type="text" class="form-control"
+							name="writer" id="writer"
+							style="width: 100px;" placeholder="닉네임">
+					</td>				
+		</tr>	
+		<tr>
+			<th style="width: 100px;background-color: #EFF2FB">비밀번호</th>
+				<td>
+					<input type="password" name="pass" id="pass"
+					class="form-control" required="required"
+					style="width: 130px;" placeholder="비밀번호">
+		</td>
+	</tr><tr>
+		<th style="width: 100px;background-color: #EFF2FB">리뷰</th>
+		<td>
+			<textarea style="width:400px;height:150px;"
+			name="content" id="content" required="required"
+			class="form-control" placeholder=""></textarea>
+		</td>
+	</tr>
+	<tr>
+		<th style="width: 100px;background-color: #EFF2FB">이미지</th>
+		<td>
+			<input type="hidden" name="image" id="image">
+			<select id="selimage" style="width: 150px;"
+			class="form-control">
+				<option disabled hidden selected>포스터선택</option>
+				<option value="../image/서복.jpg">서복</option>
+				<option value="../image/soul.jpg">소울</option>
+				<option value="../image/minari.jpg">미나리</option>
+				<option value="../image/lalaland.jpg">라라랜드</option>
+				<option value="../image/shades.jpg">아무도없는곳</option>
+				<option value="../image/중경삼림.jpg">중경삼림</option>
+			
+				
+			</select><br>
+			<div id="imgview"></div>
+		</td>
+	 </tr>
+	 <tr>
+	 	<td colspan="2" align="center">
+	 		<button type="submit"
+	 		id="btninsert" style="width: 140px;background-color:#EFF2FB;border-radius:50px;">등록</button>
+	 		
+	 		<button type="button" 
+				style="width: 140px;background-color:#CED8F6;border-radius:50px;"onclick="location.href='moviepage.html'">목록</button>       
+	 		</td>
+	 		</tr>
+		</table>
+	
+	</form>
+</div>
+<div class="moviecontent">
+	<table class="content table table-bordered"" style="width: 500px;border:3px solid #A9BCF5";">
+		<caption><b>리뷰</b></caption>
+		<tr>
+			<td>
+				<span class="title">제목</span>
+				<span class="day">날짜</span>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<span class="writer">닉네임</span>
+				<span class="likes">
+				<span class="glyphicon glyphicon-heart" num=""></span>
+				<span class="su">0</span>
+				</span>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<span class="rate">별점</span>
+			</td>
+		</tr>
+		
+		<tr style="height: 200px;" valign="top">
+			<td>
+				<div class="content">내용</div>
+				<div class="image">이미지</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<button type="button" 
+				style="width: 100px;background-color:#CED8F6;border-radius:50px;"onclick="location.href='moviepage.html'">목록</button>
+				<button type="button" 
+				style="width: 100px;background-color:#CED8F6;border-radius:50px;"onclick="location.href='http://twitter.com/intent/tweet?url='">트위터공유</button>
+				<button type="button" 
+				style="width: 100px;background-color:#CED8F6;border-radius:50px;"onclick="location.href='https://www.facebook.com/sharer/sharer.php'">페이스북공유</button>		
+				<button type="button" class="addbtn"
+				style="width: 100px;background-color:#CED8F6;border-radius:50px;">작성</button>
+				<button type="button" class="updatebtn"
+				style="width: 100px;background-color:#F5A9BC;border-radius:50px;">수정</button>
+				<button type="button" class="deletebtn"
+				style="width: 100px;background-color:#F5A9BC;border-radius:50px;">삭제</button>
+			
+			</td>
+		</tr>
+	</table>
+
+</div>
+<div class="list"></div>
+<div class="movie updateform">
+		<form id="updatefrm">
+       <table class="table table-bordered" style="width:500px; border: 3px solid #A9BCF5;">
+		<caption><b>리뷰 수정</b></caption>
+		<tr>
+			<th style="width:100px; background-color: #EFF2FB">제목</th>
+				<td>
+						<input type="hidden" id="unum" name="unum">
+						<input type="text" class="form-control"
+							name="usubject" id="usubject"
+							style="width: 300px;" placeholder="제목을 입력해주세요">
+					</td>				
+		</tr>	
+		<tr>
+			<th style="width:100px; background-color: #EFF2FB">별점</th>
+				<td>
+					<input type="radio" name="urate" id="urate" value="별1개">별1개
+					<input type="radio" name="urate" id="urate" value="별2개">별2개
+					<input type="radio" name="urate" id="urate" value="별3개">별3개
+					<input type="radio" name="urate" id="urate" value="별4개">별4개
+					<input type="radio" name="urate" id="urate" value="별5개">별5개
+					
+				</td>
+			
+		
+		</tr>
+		
+		<tr>
+			<th style="width:100px; background-color: #EFF2FB">닉네임</th>
+				<td>
+						<input type="text" class="form-control"
+							name="uwriter" id="uwriter"
+							style="width: 100px;" placeholder="닉네임">
+					</td>				
+		</tr>	
+		<tr>
+			<th style="width: 100px;background-color: #EFF2FB">비밀번호</th>
+				<td>
+					<input type="password" name="upass" id="upass"
+					class="form-control" required="required"
+					style="width: 130px;" placeholder="비밀번호">
+		</td>
+	</tr><tr>
+		<th style="width: 100px;background-color: #EFF2FB">리뷰</th>
+		<td>
+			<textarea style="width:400px;height:150px;"
+			name="ucontent" id="ucontent" required="required"
+			class="form-control" placeholder=""></textarea>
+		</td>
+	</tr>
+	<tr>
+		<th style="width: 100px;background-color: #EFF2FB">이미지</th>
+		<td>
+			<input type="hidden" name="uimage" id="uimage">
+			<select id="uselimage" style="width: 150px;"
+			class="form-control">
+				<option disabled hidden selected>포스터선택</option>
+				<option value="../image/서복.jpg">서복</option>
+				<option value="../image/soul.jpg">소울</option>
+				<option value="../image/minari.jpg">미나리</option>
+				<option value="../image/lalaland.jpg">라라랜드</option>
+				<option value="../image/shades.jpg">아무도없는곳</option>
+				<option value="../image/중경삼림.jpg">중경삼림</option>
+			
+			
+				
+			</select><br>
+			<div id="uimgview"></div>
+		</td>
+	 </tr>
+	 <tr>
+	 	<td colspan="2" align="center">
+	 		<button type="button"
+	 		id="btnupdate" style="width: 140px;background-color:#F5A9BC;border-radius:50px;">수정</button>
+	 		
+	 		<button type="button" 
+				style="width: 140px;background-color:#CED8F6;border-radius:50px;"onclick="location.href='moviepage.html'">목록</button>       
+	 		</td>
+	 		</tr>
+		</table>
+	
+	</form>
+<script type="text/javascript">
+
+
+$(document).on("click","button.updatebtn",function(){
+
+//	var num=$(this).attr("num");
+	var num=$("span.likes span.glyphicon-heart").attr("num");
+
+	$("#unum").val(num);  
+	$.ajax({
+		type:"get",
+		url:"moviegetdata.jsp",
+		dataType:"xml",
+		data:{"num":num},
+		success:function(data){
+			var writer=$(data).find("writer").text();
+			var subject=$(data).find("subject").text();
+			var content=$(data).find("content").text();
+			var rate=$(data).find("rate").text();
+			var image=$(data).find("image").text();
+			var likes=$(data).find("likes").text();
+			var image=$("#image").val();
+			//마지막 컴마 제거
+			image=image.substring(0,image.length-1);
+			$("#uwriter").val(writer);
+			$("#usubject").val(subject);
+			$("#ucontent").val(content);
+			$("#urate").val(rate);
+			$("#uimage").val(image);
+			$("#ulikes").val(likes);
+		
+
+			$("div.addform").hide();
+			$("div.moviecontent").hide();
+			$("div.updateform").show();
+		}
+	});
+});
+
+			
+	
+			$("#btnupdate").click(function() {
+				var data=$("#updatefrm").serialize();
+				//alert(data);
+				 $.ajax({
+					 type:"post",
+					 dataType:"html",
+					 url:"movieupdate.jsp",
+					 data:data,
+					 success:function(data){
+					
+						 list();
+						 
+						 
+						 $("div.updateform").hide();
+						 $("div.list").show();
+								  
+		}
+				 
+	});
+				 
+	});
+	
+
+
+
+
+	
+	$("button.deletebtn").click(function(){
+		//삭제 버튼
+		var tag="<div class='delete'><b>삭제시 비밀번호 :</b>";
+		tag+="<input type='password' class='pass' style='width:100px;margin-left:10px;'>";
+		tag+="<button type='button' class='btn btn-danger btn-sm' id='del' style='margin-left:10px;'>삭제</button>";
+		tag+="</div>";
+		
+		if($("div.delete").text().length==0){		
+			$("div.delete").empty();
+			$("table.content").after(tag);	
+		}else{
+			$("div.delete").empty();
+		}
+	});
+	
+	$(document).on("click","#del",function(){
+		var num=$("span.likes span.glyphicon-heart").attr("num");
+		
+		console.log("num="+num);
+		var pass=$("input.pass").val();
+		console.log("pass="+pass);
+		
+		$.ajax({
+			type:"get",
+			dataType:"xml",
+			url:"moviedelete.jsp",
+			data:{"num":num,"pass":pass},
+			success:function(data){
+				if($(data).text()=='success'){
+					//비번이 맞을경우 목록 보이게 하기
+					$("div.moviecontent").hide();
+					$("div.delete").empty().hide();
+					list();//db에서 목록 다시 가져오기
+					$("div.list").show();
+				}else{
+					alert("비밀번호가 맞지 않습니다");
+					$("input.pass").val('');//비번지우기
+				}
+			}
+		});
+	});
+</script>
+
+
+</body>
+</html>
+
+

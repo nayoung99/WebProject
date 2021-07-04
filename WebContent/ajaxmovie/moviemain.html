@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<style type="text/css">
+	body{ 
+		background-color: #E6E0F8;
+		
+	}
+	
+	div>h1{ 
+		font-family:'Do Hyeon';
+		font-size: 4em;
+		text-align: center;
+		margin-top: 30pt;
+		margin-right: 100pt;
+	
+	}
+	
+	div>h2{ 
+		font-family:'Gothic A1';
+		font-size: 2em;
+		text-align: center;
+		margin-top: 70pt;
+		margin-right: 100pt;
+	
+	}
+	
+	#mov1{
+		position: absolute;
+		left: 450px;
+		top:20px;
+		width:200px;
+	}
+	
+	#mov2{
+		position: absolute;
+		left: 1000px;
+		top:20px;
+		width:200px;
+	}
+	
+	#mov3{
+		position: absolute;
+		left:900px;
+		top:100px;
+		width:200px;
+	}
+	
+	#cgv {
+	position: absolute; /*절대좌표*/
+	left: 600px;
+	top: 300px;
+	width:200px;
+	cursor:pointer;
+}
+
+	#mega {
+	position: absolute; /*절대좌표*/
+	left:800px;
+	top: 300px;
+	width:200px;
+	cursor:pointer;
+}
+	#lotte {
+	position: absolute; /*절대좌표*/
+	left: 600px;
+	top: 500px;
+	width:200px; 
+	cursor:pointer;
+	margin-right: 20px;
+}
+
+	#cine {
+	position: absolute; /*절대좌표*/
+	left: 800px;
+	top: 500px;
+	width:200px; 
+	cursor:pointer;
+	}
+	#linkbtn {
+	position: absolute; /*절대좌표*/
+	text-align: center;
+	left: 650px;
+	top: 100px;
+	width:300px; 
+	height:80px;
+	font-size: 1.6em;
+	cursor:pointer;
+	font-weight: bold;
+	border-radius: 30px;
+	border: 3px dotted black;  
+	  
+	}
+	
+	
+	
+	#modalbtn {
+	position: absolute; /*절대좌표*/
+	left: 500px;
+	top: 200px;
+	font-size: 1.2em;
+	cursor: pointer;   
+	}
+</style>
+<script type="text/javascript">
+$(function() {
+$("#cgv").click(function(e) {
+	location.href='https://www.cgv.co.kr/';
+});
+
+$("#mega").click(function(e) {
+	location.href='https://www.megabox.co.kr/';
+});
+
+$("#lotte").click(function(e) {
+	location.href='https://www.lottecinema.co.kr/NLCHS';
+});
+$("#cine").click(function(e) {
+	location.href='https://cineq.co.kr/';
+});
+
+$("#box").click(function(e) {
+	location.href='https://www.kobis.or.kr/kobis/business/stat/boxs/findRealTicketList.do';  
+});
+
+
+});
+</script>
+</head>
+<body>
+
+
+<button type="button"id="modalbtn" style="background-color: #E6E0F8;border-radius:30px;" 
+	data-toggle="modal" data-target="#myModal">영화차트gogo~</button>
+<!-- target과 id같아야하고 dismiss 꼭 들어가야 한다  -->
+<div class="modal fade" id="myModal">
+	<div class="modal-dialog modal-sm">
+	<div class="modal-content">
+		<div class="modal-body" style="cursor:pointer;">   
+			박스오피스차트바로가기<span class='glyphicon glyphicon-hand-down'></span><br>
+			<img src="../image/box.jpg" id="box">
+		</div>
+	<div class="modal-footer">
+		<button type="button" style="background-color: #E6E0F8;" 
+		data-dismiss="modal">close</button>
+	</div>
+</div>
+</div>
+</div>
+
+<div>
+<h1>Movie Review</h1>
+<button type="button" id="linkbtn"
+style="background-color:#E6E0F8;"onclick="location.href='moviepage.html'">movie review gogo~~</button>
+<h2>영화 예매하러가기<span class='glyphicon glyphicon-hand-down'></span></h2>
+<img alt="" src="../image/cgv.png" id="cgv">
+<img alt="" src="../image/메가.png" id="mega">
+<img alt="" src="../image/롯데시네마.png" id="lotte">
+<img alt="" src="../image/씨네큐.png" id="cine">
+<img alt="" src="../image/영화관1.png" id="mov1">
+<img alt="" src="../image/영화관2.png" id="mov2">
+<img alt="" src="../image/영화관3.png" id="mov3">
+</div>
+</body>
+</html>
